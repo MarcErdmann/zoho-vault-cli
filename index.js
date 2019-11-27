@@ -1,17 +1,64 @@
-const axios = require('axios');
-const keytar = require('keytar');
-const program = require('commander');
+require('dotenv').config();
 
-axios.post('https://accounts.zoho.com/oauth/v3/device/code', {}, {
-    params: {
-        client_id: '1000.VQHN4RUSH8H3TSRWPNM7LOJUEJRHRH',
-        grant_type: 'device_request',
-        scope: 'ZohoVault.secrets.READ'
+const axios = require('axios');
+const program = require('commander');
+const dayjs = require('dayjs');
+const express = require('express');
+const keytar = require('keytar');
+const open = require('open');
+
+function login() {
+    return new Promise((resolve, reject) => {
+        const app = express();
+        let server = undefined;
+
+        app.get('/callback', (req, res) => {
+            res.sendStatus(200);
+            server.close();
+
+            axios.post('https://accounts.zoho.com/oauth/v2/token', {}, {
+                params: {
+                    client_id: process.env.API_KEY,
+                    client_secret: process.env.API_SECRET,
+                    grant_type: 'authorization_code',
+                    scope: 'ZohoVault.secrets.READ',
+                    redirect_uri: 'http://localhost:37195/callback',
+                    code: req.query.code
+                }
+            }).then(response => {
+                response.data.expires_at = dayjs().add(response.data.expires_in, 'second');
+                resolve(response.data);
+            }).catch(err => {
+                reject(err);
+            });
+        });
+
+        server = app.listen(37195);
+
+        open(`https://accounts.zoho.com/oauth/v2/auth?client_id=${process.env.API_KEY}&response_type=code&redirect_uri=http://localhost:37195/callback&scope=ZohoVault.secrets.READ`);
+    });
+}
+
+// Try to get access token from gnome keyring
+keytar.getPassword('zoho-vault', 'default').then(token => {
+    if (!token) {
+        // login if the token is not available in gnome keyring
+        return login();
+    } else {
+        // otherwise parse the token and check if still valid
+        // login if not valid anymore
+        token = JSON.parse(token);
+        return dayjs().isBefore(token.expires_at) ? token : login();
     }
-}).then(response => {
-    console.log(response.data);
+}).then(token => {
+    // Save current token to gnome keyring
+    return keytar.setPassword('zoho-vault', 'default', JSON.stringify(token)).then(() => {
+        return token;
+    });
+}).then(token => {
+    // perform action
 }).catch(err => {
-    console.error(err);
+    console.error('Unable to recover from error', err);
 });
 
 // program.version('0.0.1');
