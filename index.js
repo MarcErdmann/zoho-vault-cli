@@ -33,7 +33,7 @@ program
             // perform action
             console.log(token);
             return axios.get('/api/rest/json/v1/secrets', {
-                baseURL: token.api_domain,
+                baseURL: 'https://vault.zoho.com',
                 params: {
                     secretName: name
                 }, 
