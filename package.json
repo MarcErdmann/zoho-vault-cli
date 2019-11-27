@@ -10,5 +10,15 @@
   },
   "devDependencies": {
     "eslint": "^6.7.1"
+  },
+  "name": "zoho-vault-cli",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "git@bitbucket.org:deenstnet/zoho-vault-cli.git",
+  "author": "marc@deenst.net",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "run": "node index"
   }
 }
