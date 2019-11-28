@@ -11,3 +11,11 @@
 # Important Information
 This CLI will listen on port 37195 shortly to complete the OAuth flow. If this port is blocked, the CLI will not work.
 The access token for Zoho Vault will be stored in your Gnome Keyring.
+
+# Error Codes
+| Code | Description |
+| ---- | ----------- |
+| 1    | Unknown Error |
+| 10   | Request for Secret to Zoho Vault failed |
+| 11   | Secret not foundin Zoho Vault |
+| 12   | Secret has no such Field |

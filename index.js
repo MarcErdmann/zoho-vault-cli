@@ -45,12 +45,17 @@ program
             });
         }).then(response => {
             // Check if password is present
-            if (response.data.operation.result.status != 'Success') throw new Error(response.data.operation.result.message);
-            if (!response.data.operation.Details || response.data.operation.Details.length < 1) throw new Error('no matching secret found');
+            if (response.data.operation.result.status != 'Success') process.exit(10);
+            if (!response.data.operation.Details || response.data.operation.Details.length < 1) process.exit(11);
 
             return JSON.parse(response.data.operation.Details[0].secretData);
+        }).then(secret => {
+            // Check if field is present
+            if (!secret[field]) process.exit(12);
+
+            console.log(secret[field]);
         }).catch(err => {
-            console.error('Unable to recover from error', err);
+            process.exit(1);
         });
     });
 
