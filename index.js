@@ -30,20 +30,25 @@ program
                 return token;
             });
         }).then(token => {
-            // perform action
-            console.log(token);
+            // Get password from Zoho Vault
             return axios.get('/api/rest/json/v1/secrets', {
                 baseURL: 'https://vault.zoho.com',
                 params: {
-                    secretName: name
+                    secretName: name,
+                    isAsc: true,
+                    pageNum: 0,
+                    rowPerPage: 50
                 }, 
                 headers: {
                     'Authorization': `${token.token_type} ${token.access_token}`
                 }
-            }).then(response => {
-                console.log(response.data);
-                // return response.data.
             });
+        }).then(response => {
+            // Check if password is present
+            if (response.data.operation.result.status != 'Success') throw new Error(response.data.operation.result.message);
+            if (!response.data.operation.Details || response.data.operation.Details.length < 1) throw new Error('no matching secret found');
+
+            return JSON.parse(response.data.operation.Details[0].secretData);
         }).catch(err => {
             console.error('Unable to recover from error', err);
         });
