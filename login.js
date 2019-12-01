@@ -17,7 +17,7 @@ function login() {
                     client_id: process.env.API_KEY,
                     client_secret: process.env.API_SECRET,
                     grant_type: 'authorization_code',
-                    scope: 'ZohoVault.secrets.READ',
+                    // scope: 'ZohoVault.user.READ,ZohoVault.secrets.READ,AaaServer.profile.READ',
                     redirect_uri: 'http://localhost:37195/callback',
                     code: req.query.code
                 }
@@ -31,7 +31,7 @@ function login() {
 
         server = app.listen(37195);
 
-        open(`https://accounts.zoho.com/oauth/v2/auth?client_id=${process.env.API_KEY}&response_type=code&redirect_uri=http://localhost:37195/callback&scope=ZohoVault.secrets.READ`);
+        open(`https://accounts.zoho.com/oauth/v2/auth?client_id=${process.env.API_KEY}&response_type=code&redirect_uri=http://localhost:37195/callback&scope=ZohoVault.user.READ,ZohoVault.secrets.READ,AaaServer.profile.READ`);
     });
 }
 

@@ -11,8 +11,9 @@ program.version('0.0.1');
 
 program
     .command('get <name> <field>')
+    .option('-f, --force', 'enforce a relogin')
     .description('get a password by its name')
-    .action((name, field) => {
+    .action((name, field, options) => {
         // Try to get access token from gnome keyring
         return keytar.getPassword('zoho-vault', 'default').then(token => {
             if (!token) {
@@ -22,7 +23,7 @@ program
                 // otherwise parse the token and check if still valid
                 // login if not valid anymore
                 token = JSON.parse(token);
-                return dayjs().isBefore(token.expires_at) ? token : login();
+                return dayjs().isBefore(token.expires_at) && !options.force ? token : login();
             }
         }).then(token => {
             // Save current token to gnome keyring
@@ -30,6 +31,7 @@ program
                 return token;
             });
         }).then(token => {
+            console.log(token);
             // Get password from Zoho Vault
             return axios.get('/api/rest/json/v1/secrets', {
                 baseURL: 'https://vault.zoho.com',
@@ -55,6 +57,7 @@ program
 
             console.log(secret[field]);
         }).catch(err => {
+            console.log(err);
             process.exit(1);
         });
     });
