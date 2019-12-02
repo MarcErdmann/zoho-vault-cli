@@ -16,6 +16,7 @@ The access token for Zoho Vault will be stored in your Gnome Keyring.
 | Code | Description |
 | ---- | ----------- |
 | 1    | Unknown Error |
+| 9    | Request for Login failed |
 | 10   | Request for Secret to Zoho Vault failed |
-| 11   | Secret not foundin Zoho Vault |
+| 11   | Secret not found in Zoho Vault |
 | 12   | Secret has no such Field |
