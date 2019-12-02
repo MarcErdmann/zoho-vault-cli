@@ -3,6 +3,7 @@ require('dotenv').config();
 const axios = require('axios');
 const program = require('commander');
 const dayjs = require('dayjs');
+const inquirer = require('inquirer');
 const keytar = require('keytar');
 
 const login = require('./login');
@@ -14,8 +15,16 @@ program
     .option('-f, --force', 'enforce a relogin')
     .description('get a password by its name')
     .action((name, field, options) => {
-        // Try to get access token from gnome keyring
-        return keytar.getPassword('zoho-vault', 'default').then(token => {
+        // Ask for password
+        return inquirer.prompt([{
+            type: 'password',
+            name: 'password',
+            message: 'Enter your Masterpassword'
+        }]).then(answers => {
+            console.log(answers.password);
+            // Try to get access token from gnome keyring
+            return keytar.getPassword('zoho-vault', 'default');
+        }).then(token => {
             if (!token) {
                 // login if the token is not available in gnome keyring
                 return login();

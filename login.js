@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 const express = require('express');
 const open = require('open');
 
-function login() {
+function login(password) {
     return new Promise((resolve, reject) => {
         const app = express();
         let server = undefined;
@@ -17,7 +17,6 @@ function login() {
                     client_id: process.env.API_KEY,
                     client_secret: process.env.API_SECRET,
                     grant_type: 'authorization_code',
-                    // scope: 'ZohoVault.user.READ,ZohoVault.secrets.READ,AaaServer.profile.READ',
                     redirect_uri: 'http://localhost:37195/callback',
                     code: req.query.code
                 }
